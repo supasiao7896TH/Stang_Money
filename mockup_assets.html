@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mockup: ระบบทรัพย์สิน — GiGi Money</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f4;color:#1c1917;font-size:15px}
+.phone{width:390px;margin:0 auto;min-height:100vh;position:relative;background:#f5f5f4}
+
+/* ── Screens ── */
+.screen{display:none;flex-direction:column;min-height:100vh}
+.screen.active{display:flex}
+
+/* ── Top Bar ── */
+.topbar{background:#0d9488;color:#fff;padding:48px 16px 14px;display:flex;align-items:center;gap:10px}
+.topbar-back{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;font-size:18px;border:none;color:#fff}
+.topbar-title{font-weight:700;font-size:18px;flex:1}
+.topbar-btn{background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:20px;padding:5px 13px;font-size:13px;cursor:pointer;font-weight:600}
+
+/* ── Cards ── */
+.card{background:#fff;border-radius:16px;padding:16px;margin:12px 12px 0;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card-title{font-size:12px;color:#78716c;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.card-big{font-size:28px;font-weight:800;color:#0d9488}
+.card-sub{font-size:12px;color:#78716c;margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 2px}
+.mini-stat{background:#f5f5f4;border-radius:10px;padding:10px 12px}
+.mini-stat-label{font-size:11px;color:#78716c;margin-bottom:2px}
+.mini-stat-val{font-size:16px;font-weight:700}
+.green{color:#16a34a}.red{color:#dc2626}.teal{color:#0d9488}
+
+/* ── Asset List ── */
+.section-header{font-size:12px;font-weight:700;color:#78716c;padding:14px 16px 6px;text-transform:uppercase;letter-spacing:.04em}
+.asset-item{background:#fff;margin:0 12px 6px;border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.asset-item:active{opacity:.85}
+.asset-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.asset-info{flex:1;min-width:0}
+.asset-name{font-weight:700;font-size:14px}
+.asset-qty{font-size:12px;color:#78716c;margin-top:2px}
+.asset-value{text-align:right;flex-shrink:0}
+.asset-val-num{font-weight:700;font-size:14px}
+.asset-pnl{font-size:11px;font-weight:600;margin-top:2px}
+.pnl-up::before{content:"▲ "}
+.pnl-dn::before{content:"▼ "}
+
+/* ── Category Picker (Star Grid) ── */
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 4px}
+.cat-btn{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:10px 6px;border-radius:12px;border:2px solid transparent;background:#f5f5f4;transition:all .15s}
+.cat-btn.selected{border-color:#0d9488;background:#ccfbf1}
+.cat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.cat-label{font-size:11px;font-weight:600;color:#44403c;text-align:center;line-height:1.2}
+
+/* ── Form ── */
+.form-section{padding:10px 14px}
+.form-label{font-size:12px;font-weight:700;color:#78716c;margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+.form-input{width:100%;border:1.5px solid #e7e5e4;border-radius:12px;padding:12px 14px;font-size:15px;outline:none;font-family:inherit;background:#fff}
+.form-input:focus{border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.unit-badge{background:#ccfbf1;color:#0d9488;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:700;display:inline-block;margin-top:6px}
+.divider{height:1px;background:#f5f5f4;margin:6px 0}
+
+/* ── Bottom Nav ── */
+.bottom-nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #f5f5f4;display:flex;padding:8px 0 20px;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none}
+.nav-icon{font-size:22px}
+.nav-label{font-size:10px;font-weight:600;color:#a8a29e}
+.nav-item.active .nav-label{color:#0d9488}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 1px #0d9488)}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:84px;right:20px;width:54px;height:54px;border-radius:50%;background:#0d9488;color:#fff;font-size:26px;border:none;box-shadow:0 4px 12px rgba(13,148,136,.45);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+
+/* ── Sheet ── */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding-bottom:24px}
+.sheet-handle{width:36px;height:4px;background:#d6d3d1;border-radius:2px;margin:12px auto 4px}
+.sheet-title{font-size:16px;font-weight:800;padding:4px 16px 12px;text-align:center}
+.sheet-confirm{background:#0d9488;color:#fff;border:none;border-radius:14px;width:calc(100% - 28px);margin:12px 14px 0;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.sheet-confirm:active{opacity:.85}
+
+/* ── Detail Screen ── */
+.detail-hero{background:linear-gradient(135deg,#0d9488,#0891b2);color:#fff;padding:48px 16px 20px}
+.detail-icon-wrap{width:64px;height:64px;border-radius:18px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:10px}
+.detail-name{font-size:22px;font-weight:800}
+.detail-qty{font-size:14px;opacity:.8;margin-top:3px}
+.detail-val{font-size:32px;font-weight:900;margin-top:6px}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 12px 0}
+.stat-box{background:#fff;border-radius:12px;padding:10px 12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.stat-box-label{font-size:11px;color:#78716c;margin-bottom:4px}
+.stat-box-val{font-size:14px;font-weight:700}
+
+/* ── Progress bar ── */
+.progress-wrap{background:#f5f5f4;border-radius:8px;height:8px;margin:8px 0 4px}
+.progress-bar{background:linear-gradient(90deg,#0d9488,#0891b2);border-radius:8px;height:8px}
+
+/* Note label */
+.note-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:12px;color:#92400e}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 1: Net Worth Dashboard (หน้าหลัก)
+════════════════════════════════════════════ -->
+<div id="s1" class="screen active">
+  <div style="background:#0d9488;color:#fff;padding:48px 16px 14px">
+    <div style="font-size:13px;opacity:.8">สวัสดี GiGi 👋</div>
+    <div style="font-size:22px;font-weight:800;margin-top:2px">ภาพรวมการเงิน</div>
+  </div>
+
+  <!-- Net Worth Card -->
+  <div class="card" style="background:linear-gradient(135deg,#0d9488,#0891b2);color:#fff;margin-top:-1px;border-radius:0 0 20px 20px;padding:18px 16px 20px">
+    <div style="font-size:12px;opacity:.8;font-weight:600;text-transform:uppercase;letter-spacing:.04em">มูลค่าสุทธิ (Net Worth)</div>
+    <div style="font-size:34px;font-weight:900;margin:4px 0">฿4,250,000</div>
+    <div style="display:flex;gap:16px;font-size:12px;opacity:.85;margin-top:4px">
+      <span>🏦 ทรัพย์สิน ฿5,100,000</span>
+      <span>📉 หนี้สิน ฿850,000</span>
+    </div>
+    <!-- bar -->
+    <div style="background:rgba(255,255,255,.2);border-radius:8px;height:6px;margin-top:12px">
+      <div style="background:#fff;border-radius:8px;height:6px;width:83%"></div>
+    </div>
+    <div style="font-size:11px;opacity:.7;margin-top:4px">ทรัพย์สิน 83% / หนี้สิน 17%</div>
+  </div>
+
+  <!-- Asset summary -->
+  <div style="padding:12px 12px 0">
+    <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">ทรัพย์สิน</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="mini-stat">
+        <div class="mini-stat-label">อสังหาริมทรัพย์</div>
+        <div class="mini-stat-val teal">฿3,500,000</div>
+        <div style="font-size:11px;color:#78716c;margin-top:1px">บ้าน + ที่ดิน</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-label">ยานพาหนะ</div>
+        <div class="mini-stat-val teal">฿650,000</div>
+        <div style="font-size:11px;color:#78716c;margin-top:1px">รถยนต์ 1 คัน</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-label">ทองคำ / โลหะ</div>
+        <div class="mini-stat-val green">฿480,000</div>
+        <div style="font-size:11px;color:#16a34a;margin-top:1px">▲ +฿32,000 (7.1%)</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-label">หุ้น / กองทุน</div>
+        <div class="mini-stat-val green">฿470,000</div>
+        <div style="font-size:11px;color:#16a34a;margin-top:1px">▲ +฿55,000 (13.2%)</div>
+      </div>
+    </div>
+    <div class="note-box" style="margin-top:10px">
+      💡 แตะ "ทรัพย์สิน" ในแถบด้านล่างเพื่อดูและจัดการรายการ
+    </div>
+  </div>
+
+  <div style="flex:1"></div>
+  <div class="bottom-nav">
+    <button class="nav-item active"><span class="nav-icon">🏠</span><span class="nav-label" style="color:#0d9488">หน้าหลัก</span></button>
+    <button class="nav-item" onclick="show('s2')"><span class="nav-icon">📊</span><span class="nav-label">รายจ่าย</span></button>
+    <button class="nav-item" onclick="show('s2')"><span class="nav-icon">🏦</span><span class="nav-label">ทรัพย์สิน</span></button>
+    <button class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-label">ตั้งค่า</span></button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 2: Asset List
+════════════════════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="show('s1')">←</button>
+    <span class="topbar-title">ทรัพย์สินของฉัน</span>
+    <button class="topbar-btn" onclick="openSheet()">+ เพิ่ม</button>
+  </div>
+
+  <!-- Summary bar -->
+  <div class="card" style="background:#0d9488;color:#fff">
+    <div style="font-size:12px;opacity:.8;font-weight:600">มูลค่าทรัพย์สินรวม</div>
+    <div style="font-size:26px;font-weight:900;margin:3px 0">฿5,100,000</div>
+    <div class="progress-wrap" style="margin-top:10px">
+      <div class="progress-bar" style="width:100%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;opacity:.75;margin-top:5px">
+      <span>อสังหา 69%</span>
+      <span>ยานพาหนะ 13%</span>
+      <span>ทอง 9%</span>
+      <span>หุ้น 9%</span>
+    </div>
+  </div>
+
+  <!-- Fixed Assets -->
+  <div class="section-header">🏗️ ทรัพย์สินถาวร</div>
+
+  <div class="asset-item" onclick="show('s4')">
+    <div class="asset-icon" style="background:#fef3c7">🏠</div>
+    <div class="asset-info">
+      <div class="asset-name">บ้านพักอาศัย</div>
+      <div class="asset-qty">1 หลัง · อัปเดต 1 ม.ค. 68</div>
+    </div>
+    <div class="asset-value">
+      <div class="asset-val-num teal">฿3,200,000</div>
+      <div class="asset-pnl pnl-up green" style="font-size:11px">+฿200K</div>
+    </div>
+  </div>
+
+  <div class="asset-item">
+    <div class="asset-icon" style="background:#fee2e2">🚗</div>
+    <div class="asset-info">
+      <div class="asset-name">รถยนต์ Toyota</div>
+      <div class="asset-qty">1 คัน · อัปเดต 15 ก.พ. 68</div>
+    </div>
+    <div class="asset-value">
+      <div class="asset-val-num teal">฿650,000</div>
+      <div class="asset-pnl pnl-dn red" style="font-size:11px">−฿100K</div>
+    </div>
+  </div>
+
+  <div class="asset-item">
+    <div class="asset-icon" style="background:#dcfce7">🌾</div>
+    <div class="asset-info">
+      <div class="asset-name">ที่ดินต่างจังหวัด</div>
+      <div class="asset-qty">5 ไร่ · อัปเดต 1 ม.ค. 68</div>
+    </div>
+    <div class="asset-value">
+      <div class="asset-val-num teal">฿300,000</div>
+      <div class="asset-pnl pnl-up green" style="font-size:11px">+฿50K</div>
+    </div>
+  </div>
+
+  <!-- Liquid Assets -->
+  <div class="section-header">📈 ทรัพย์สินสภาพคล่อง</div>
+
+  <div class="asset-item">
+    <div class="asset-icon" style="background:#fef9c3">🪙</div>
+    <div class="asset-info">
+      <div class="asset-name">ทองคำ 96.5%</div>
+      <div class="asset-qty">10 บาท · ราคา ฿48,000/บาท</div>
+    </div>
+    <div class="asset-value">
+      <div class="asset-val-num teal">฿480,000</div>
+      <div class="asset-pnl pnl-up green" style="font-size:11px">+฿32K (7.1%)</div>
+    </div>
+  </div>
+
+  <div class="asset-item">
+    <div class="asset-icon" style="background:#ede9fe">📊</div>
+    <div class="asset-info">
+      <div class="asset-name">PTT หุ้น</div>
+      <div class="asset-qty">2,000 หุ้น · ราคา ฿35/หุ้น</div>
+    </div>
+    <div class="asset-value">
+      <div class="asset-val-num teal">฿70,000</div>
+      <div class="asset-pnl pnl-up green" style="font-size:11px">+฿10K (16.7%)</div>
+    </div>
+  </div>
+
+  <div class="asset-item">
+    <div class="asset-icon" style="background:#e0f2fe">💹</div>
+    <div class="asset-info">
+      <div class="asset-name">กองทุน SET50</div>
+      <div class="asset-qty">10,000 หน่วย · NAV ฿40/หน่วย</div>
+    </div>
+    <div class="asset-value">
+      <div class="asset-val-num teal">฿400,000</div>
+      <div class="asset-pnl pnl-up green" style="font-size:11px">+฿45K (12.7%)</div>
+    </div>
+  </div>
+
+  <div style="height:80px"></div>
+  <div class="bottom-nav">
+    <button class="nav-item" onclick="show('s1')"><span class="nav-icon">🏠</span><span class="nav-label">หน้าหลัก</span></button>
+    <button class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">รายจ่าย</span></button>
+    <button class="nav-item active"><span class="nav-icon">🏦</span><span class="nav-label" style="color:#0d9488">ทรัพย์สิน</span></button>
+    <button class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-label">ตั้งค่า</span></button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 3: Add Asset (Sheet)
+════════════════════════════════════════════ -->
+<div id="s3" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="show('s2')">←</button>
+    <span class="topbar-title">เพิ่มทรัพย์สิน</span>
+    <button class="topbar-btn" style="background:#16a34a" onclick="show('s2')">บันทึก</button>
+  </div>
+
+  <!-- Category Picker -->
+  <div class="card">
+    <div class="card-title">เลือกประเภท</div>
+    <div class="cat-grid">
+      <div class="cat-btn selected" onclick="selectCat(this,'บ้าน','หลัง')">
+        <div class="cat-icon" style="background:#fef3c7">🏠</div>
+        <div class="cat-label">บ้าน</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'คอนโด','ยูนิต')">
+        <div class="cat-icon" style="background:#e0f2fe">🏢</div>
+        <div class="cat-label">คอนโด</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'รถยนต์','คัน')">
+        <div class="cat-icon" style="background:#fee2e2">🚗</div>
+        <div class="cat-label">รถยนต์</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'ที่ดิน','ไร่')">
+        <div class="cat-icon" style="background:#dcfce7">🌾</div>
+        <div class="cat-label">ที่ดิน</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'ทองคำ','บาท')">
+        <div class="cat-icon" style="background:#fef9c3">🪙</div>
+        <div class="cat-label">ทองคำ</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'หุ้น','หุ้น')">
+        <div class="cat-icon" style="background:#ede9fe">📊</div>
+        <div class="cat-label">หุ้น</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'กองทุน','หน่วย')">
+        <div class="cat-icon" style="background:#e0f2fe">💹</div>
+        <div class="cat-label">กองทุน</div>
+      </div>
+      <div class="cat-btn" onclick="selectCat(this,'อื่นๆ','รายการ')">
+        <div class="cat-icon" style="background:#f5f5f4">📦</div>
+        <div class="cat-label">อื่นๆ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Fields -->
+  <div class="card">
+    <div class="card-title">รายละเอียด</div>
+
+    <div class="form-section" style="padding:4px 0 10px">
+      <div class="form-label">ชื่อ / รายละเอียด</div>
+      <input class="form-input" placeholder="เช่น บ้านพักอาศัย หมู่บ้าน ABC"/>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="form-row" style="padding:10px 0">
+      <div>
+        <div class="form-label">จำนวน</div>
+        <input class="form-input" type="number" value="1" id="qty-input" oninput="calcTotal()"/>
+        <div class="unit-badge" id="unit-label">หลัง</div>
+      </div>
+      <div>
+        <div class="form-label">ราคาทุนต่อหน่วย (฿)</div>
+        <input class="form-input" type="number" placeholder="3,000,000" id="cost-input" oninput="calcTotal()"/>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="form-row" style="padding:10px 0">
+      <div>
+        <div class="form-label">มูลค่าปัจจุบัน/หน่วย (฿)</div>
+        <input class="form-input" type="number" placeholder="3,200,000" id="cur-input" oninput="calcTotal()"/>
+      </div>
+      <div>
+        <div class="form-label">มูลค่ารวมปัจจุบัน</div>
+        <div class="form-input" id="total-display" style="background:#f5f5f4;color:#0d9488;font-weight:700">—</div>
+      </div>
+    </div>
+
+    <!-- P&L preview -->
+    <div id="pnl-preview" style="display:none;background:#f0fdf4;border-radius:10px;padding:10px 12px;margin-top:4px">
+      <div style="font-size:12px;color:#16a34a;font-weight:700" id="pnl-text">กำไร/ขาดทุน: —</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">หมายเหตุ (ไม่บังคับ)</div>
+    <div class="form-section" style="padding:4px 0 0">
+      <input class="form-input" placeholder="เช่น โฉนดที่ดินเลขที่ 1234"/>
+    </div>
+  </div>
+
+  <div style="padding:12px">
+    <button onclick="show('s2')" style="background:#0d9488;color:#fff;border:none;border-radius:14px;width:100%;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit">
+      ✅ บันทึกทรัพย์สิน
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 4: Asset Detail
+════════════════════════════════════════════ -->
+<div id="s4" class="screen">
+  <div class="detail-hero">
+    <button style="background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;margin-bottom:8px" onclick="show('s2')">←</button>
+    <div class="detail-icon-wrap">🏠</div>
+    <div class="detail-name">บ้านพักอาศัย</div>
+    <div class="detail-qty">1 หลัง</div>
+    <div class="detail-val">฿3,200,000</div>
+    <div style="font-size:13px;margin-top:4px;background:rgba(255,255,255,.15);display:inline-block;padding:3px 10px;border-radius:20px">
+      ▲ +฿200,000 (+6.7% จากราคาทุน)
+    </div>
+  </div>
+
+  <!-- 3 stat boxes -->
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-box-label">ราคาทุน</div>
+      <div class="stat-box-val">฿3,000,000</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-label">มูลค่าปัจจุบัน</div>
+      <div class="stat-box-val teal">฿3,200,000</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-label">กำไร/ขาดทุน</div>
+      <div class="stat-box-val green">+฿200K</div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">ประวัติการอัปเดตมูลค่า</div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f5f5f4">
+        <div style="font-size:13px;color:#44403c">1 ม.ค. 2568</div>
+        <div style="font-size:13px;font-weight:700;color:#0d9488">฿3,200,000</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f5f5f4">
+        <div style="font-size:13px;color:#44403c">1 ม.ค. 2567</div>
+        <div style="font-size:13px;font-weight:700">฿3,100,000</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0">
+        <div style="font-size:13px;color:#44403c">1 ม.ค. 2566 (ซื้อ)</div>
+        <div style="font-size:13px;font-weight:700;color:#78716c">฿3,000,000</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <button style="background:#f5f5f4;color:#44403c;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">✏️ แก้ไข</button>
+    <button style="background:#0d9488;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">🔄 อัปเดตมูลค่า</button>
+  </div>
+</div>
+
+
+<!-- ════ Sheet (Add Asset FAB) ════ -->
+<div class="sheet-overlay" id="add-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">เพิ่มทรัพย์สินใหม่</div>
+    <div class="cat-grid" style="padding:4px 16px 8px">
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#fef3c7">🏠</div>
+        <div class="cat-label">บ้าน</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#e0f2fe">🏢</div>
+        <div class="cat-label">คอนโด</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#fee2e2">🚗</div>
+        <div class="cat-label">รถยนต์</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#dcfce7">🌾</div>
+        <div class="cat-label">ที่ดิน</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#fef9c3">🪙</div>
+        <div class="cat-label">ทองคำ</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#ede9fe">📊</div>
+        <div class="cat-label">หุ้น</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#e0f2fe">💹</div>
+        <div class="cat-label">กองทุน</div>
+      </div>
+      <div class="cat-btn" onclick="closeSheet();show('s3')">
+        <div class="cat-icon" style="background:#f5f5f4">📦</div>
+        <div class="cat-label">อื่นๆ</div>
+      </div>
+    </div>
+    <button class="sheet-confirm" onclick="closeSheet()">ยกเลิก</button>
+  </div>
+</div>
+
+<!-- Screen nav labels -->
+<div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;background:#fffbeb;border-top:1px solid #fde68a;padding:6px 12px;font-size:11px;color:#92400e;text-align:center;z-index:30">
+  📱 Mockup — แตะปุ่มเพื่อดูหน้าต่างๆ &nbsp;|&nbsp;
+  <span style="cursor:pointer;text-decoration:underline" onclick="show('s1')">Dashboard</span> ·
+  <span style="cursor:pointer;text-decoration:underline" onclick="show('s2')">รายการ</span> ·
+  <span style="cursor:pointer;text-decoration:underline" onclick="show('s3')">เพิ่มทรัพย์สิน</span> ·
+  <span style="cursor:pointer;text-decoration:underline" onclick="show('s4')">รายละเอียด</span>
+</div>
+
+</div><!-- /phone -->
+
+<script>
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function openSheet(){
+  document.getElementById('add-sheet').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('add-sheet').classList.remove('open');
+}
+function selectCat(el, name, unit){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('unit-label').textContent=unit;
+  calcTotal();
+}
+function calcTotal(){
+  var qty=parseFloat(document.getElementById('qty-input').value)||0;
+  var cur=parseFloat(document.getElementById('cur-input').value)||0;
+  var cost=parseFloat(document.getElementById('cost-input').value)||0;
+  var total=qty*cur;
+  var el=document.getElementById('total-display');
+  var pnlWrap=document.getElementById('pnl-preview');
+  var pnlText=document.getElementById('pnl-text');
+  if(total>0){
+    el.textContent='฿'+total.toLocaleString();
+    if(cost>0 && cur>0){
+      var pnl=qty*(cur-cost);
+      var pct=((cur-cost)/cost*100).toFixed(1);
+      pnlWrap.style.display='block';
+      pnlWrap.style.background=pnl>=0?'#f0fdf4':'#fef2f2';
+      pnlText.style.color=pnl>=0?'#16a34a':'#dc2626';
+      pnlText.textContent=(pnl>=0?'กำไร ▲':'ขาดทุน ▼')+' ฿'+Math.abs(pnl).toLocaleString()+' ('+Math.abs(pct)+'%)';
+    }
+  } else {
+    el.textContent='—';
+    pnlWrap.style.display='none';
+  }
+}
+// close sheet on overlay click
+document.getElementById('add-sheet').addEventListener('click',function(e){
+  if(e.target===this)closeSheet();
+});
+</script>
+</body>
+</html>
